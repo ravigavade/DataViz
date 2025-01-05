@@ -50,6 +50,12 @@ dependencies {
 
 //    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+//        implementation ("com.anychart:AnyChart-Android:1.5.0")
+
+        implementation (libs.graphview)
+        implementation (libs.opencsv) // Add this line for OpenCSV
+
+
 
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
