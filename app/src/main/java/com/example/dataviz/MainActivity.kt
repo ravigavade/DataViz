@@ -2,27 +2,22 @@ package com.example.dataviz
 
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dataviz.databinding.ActivityMainBinding
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val dataList = mutableListOf<List<String>>()
-    private lateinit var adapter: ExcelDataAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setupRecyclerView()
 
         // Handle file upload
         val filePickerLauncher =
@@ -33,12 +28,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnUpload.setOnClickListener {
             filePickerLauncher.launch("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         }
-    }
-
-    private fun setupRecyclerView() {
-        adapter = ExcelDataAdapter(dataList)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
     }
 
     private fun handleFile(uri: Uri) {
@@ -56,15 +45,21 @@ class MainActivity : AppCompatActivity() {
         val workbook = WorkbookFactory.create(inputStream)
         val sheet = workbook.getSheetAt(0)
 
-        dataList.clear()
-        for (row in sheet) {
-            val rowData = mutableListOf<String>()
-            for (cell in row) {
-                rowData.add(cell.toString())
-            }
-            dataList.add(rowData)
-        }
+        // Clear previous table rows
+        binding.tableLayout.removeAllViews()
 
-        adapter.notifyDataSetChanged()
+        for (row in sheet) {
+            val tableRow = TableRow(this)
+
+            for (cell in row) {
+                val textView = TextView(this).apply {
+                    text = cell.toString()
+                    setPadding(16, 16, 16, 16)
+                }
+                tableRow.addView(textView)
+            }
+
+            binding.tableLayout.addView(tableRow)
+        }
     }
 }
